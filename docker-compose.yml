@@ -1,0 +1,29 @@
+services:
+  front:
+    build: ./front
+    ports:
+      - 3333:5173
+    volumes:
+      - ./front/react-app:/app/react-app
+      - /app/react-app/node_modules
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+      - WATCHPACK_POLLING=true
+  # 追記
+  back:
+    build: ./back
+    volumes:
+      - ./back:/api
+    ports:
+      - 9000:8000
+
+  db:
+    image: postgres:15
+    volumes:
+      - ./back/laravel-app/postgre_DB:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_DB: dev
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
