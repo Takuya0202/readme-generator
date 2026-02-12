@@ -5,11 +5,15 @@ import Home from './Home.tsx';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import Detail from './Detail';
 import { Toaster } from 'react-hot-toast';
+import Signup from './pages/Signup';
+import Login from './pages/Login';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <BrowserRouter>
       <Routes>
+        <Route path='/signup' element={<Signup />} />
+        <Route path='/login' element={<Login />} />
         <Route path="/projects" element={<Home />} />
         <Route path="/projects/:projectId" element={<Detail />} />
       </Routes>
