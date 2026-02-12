@@ -1,19 +1,28 @@
-import { useParams } from 'react-router-dom';
-import Sidebar from './components/Sidebar';
+import { useParams, useNavigate } from 'react-router-dom';
+import Sidebar from '../components/Sidebar';
 import { useEffect, useState, useCallback } from 'react';
-import type { Chat, ChatsResponse } from '../types/chat';
-import { UserChat } from './components/chat/user-chat';
-import { AssistantChat } from './components/chat/assistant-chat';
-import { AssistantMarkdown } from './components/chat/assistant-markdown';
-import { CreateChat } from './components/chat/create-chat';
+import type { Chat, ChatsResponse } from '../../types/chat';
+import { UserChat } from '../components/chat/user-chat';
+import { AssistantChat } from '../components/chat/assistant-chat';
+import { AssistantMarkdown } from '../components/chat/assistant-markdown';
+import { CreateChat } from '../components/chat/create-chat';
+import Cookies from 'js-cookie';
 
 export default function Detail() {
   const { projectId } = useParams<{ projectId: string }>();
+  const navigate = useNavigate();
   const [chats, setChats] = useState<Chat[]>([]);
 
   const getContent = useCallback(async () => {
     try {
-      const token = import.meta.env.VITE_API_TOKEN;
+      const token = Cookies.get('token');
+
+      // tokenがない場合はログインページへ
+      if (!token) {
+        navigate('/login');
+        return;
+      }
+
       const baseUrl = import.meta.env.VITE_API_BASE_URL;
       const res = await fetch(`${baseUrl}/projects/${projectId}`, {
         headers: {
@@ -21,12 +30,18 @@ export default function Detail() {
           Authorization: `Bearer ${token}`,
         },
       });
+
+      if (res.status === 401) {
+        navigate('/login');
+        return;
+      }
+
       const data: ChatsResponse = await res.json();
       setChats(data.data);
     } catch (error) {
       console.error('プロジェクトの取得に失敗しました:', error);
     }
-  }, [projectId]);
+  }, [projectId, navigate]);
 
   useEffect(() => {
     // eslint-disable-next-line

@@ -1,6 +1,8 @@
 import { Send, Loader2 } from 'lucide-react';
 import { useState } from 'react';
 import toast from 'react-hot-toast';
+import Cookies from 'js-cookie';
+import { useNavigate } from 'react-router-dom';
 
 interface props {
   projectId: string;
@@ -8,6 +10,7 @@ interface props {
 }
 
 export function CreateChat({ projectId, onSuccess }: props) {
+  const navigate = useNavigate();
   const [message, setMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -25,7 +28,15 @@ export function CreateChat({ projectId, onSuccess }: props) {
 
     setIsLoading(true);
     try {
-      const token = import.meta.env.VITE_API_TOKEN;
+      const token = Cookies.get('token');
+
+      // tokenがない場合はログインページへ
+      if (!token) {
+        toast.error('ログインが必要です');
+        navigate('/login');
+        return;
+      }
+
       const baseUrl = import.meta.env.VITE_API_BASE_URL;
       const res = await fetch(`${baseUrl}/projects/${projectId}`, {
         method: 'POST',
@@ -37,6 +48,13 @@ export function CreateChat({ projectId, onSuccess }: props) {
           message,
         }),
       });
+
+      // 認証エラー (401)
+      if (res.status === 401) {
+        toast.error('ログインが必要です');
+        navigate('/login');
+        return;
+      }
 
       // バリデーションエラー (422)
       if (res.status === 422) {

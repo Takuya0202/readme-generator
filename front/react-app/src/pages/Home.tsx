@@ -1,11 +1,12 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FormItem } from './components/FormItem';
-import { FormItem_int } from './components/FormItem_int';
-import { FormItem_any } from './components/FormItem_any';
-import Sidebar from './components/Sidebar';
+import { FormItem } from '../components/FormItem';
+import { FormItem_int } from '../components/FormItem_int';
+import { FormItem_any } from '../components/FormItem_any';
+import Sidebar from '../components/Sidebar';
 import toast from 'react-hot-toast';
 import { Loader2 } from 'lucide-react';
+import Cookies from 'js-cookie';
 
 export default function Home() {
   const navigate = useNavigate();
@@ -40,7 +41,15 @@ export default function Home() {
     setLoading(true);
 
     try {
-      const token = import.meta.env.VITE_API_TOKEN;
+      const token = Cookies.get('token');
+
+      // tokenがない場合はログインページへ
+      if (!token) {
+        toast.error('ログインが必要です');
+        navigate('/login');
+        return;
+      }
+
       const baseUrl = import.meta.env.VITE_API_BASE_URL;
 
       // nullableフィールドの処理
@@ -58,6 +67,13 @@ export default function Home() {
         },
         body: JSON.stringify(payload),
       });
+
+      // 認証エラー (401)
+      if (res.status === 401) {
+        toast.error('ログインが必要です');
+        navigate('/login');
+        return;
+      }
 
       // バリデーションエラー (422)
       if (res.status === 422) {
