@@ -95,8 +95,8 @@ export default function Home() {
       toast.success('プロジェクトを作成しました');
 
       // プロジェクト詳細ページに遷移
-      if (data.id || data.data?.id) {
-        navigate(`/projects/${data.id || data.data.id}`);
+      if (data.project_id || data.data?.project_id) {
+        navigate(`/projects/${data.project_id || data.data.project_id}`);
       }
     } catch (error) {
       console.error('プロジェクトの作成に失敗しました:', error);
