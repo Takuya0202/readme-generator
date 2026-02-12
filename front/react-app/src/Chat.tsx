@@ -1,12 +1,10 @@
-import { FormItem } from "./components/FormItem";
-import { FormItem_any } from "./components/FormItem_any";
-import { FormItem_int } from "./components/FormItem_int";
-import "./index.css";
-import Logo from './assets/logo.png'
-import File from './assets/file.png'
-import { SidebarItem } from "./components/SidebarItem";
-
-
+import { FormItem } from './components/FormItem';
+import { FormItem_any } from './components/FormItem_any';
+import { FormItem_int } from './components/FormItem_int';
+import './index.css';
+import Logo from './assets/logo.png';
+import File from './assets/file.png';
+import { SidebarItem } from './components/SidebarItem';
 
 export default function App() {
   return (
@@ -14,7 +12,7 @@ export default function App() {
       {/* Sidebar */}
       <aside className="w-64 bg-white border-r px-4 py-6">
         <div className="flex items-center">
-          <img src={Logo} alt="" className="h-[60px]"/>
+          <img src={Logo} alt="" className="h-[60px]" />
           <div className="mx-[8px] text-[18px]">readme generator</div>
         </div>
 
@@ -29,7 +27,6 @@ export default function App() {
           <SidebarItem title="寄付支援アプリのREADME" icon={File} />
           <SidebarItem title="天気アプリのREADME" icon={File} />
         </div>
-
       </aside>
 
       {/* Main */}
@@ -46,19 +43,47 @@ export default function App() {
             まずは基本情報を入力してください
           </h2>
 
-          <FormItem label="アプリ名" required placeholder="例：天気予報アプリ" />
-          <FormItem label="課題" required textarea placeholder="どんな課題を解決しますか？" />
-          <FormItem label="解消方法" required textarea placeholder="どのように課題を解決しますか？" />
+          <FormItem
+            label="アプリ名"
+            required
+            placeholder="例：天気予報アプリ"
+          />
+          <FormItem
+            label="課題"
+            required
+            textarea
+            placeholder="どんな課題を解決しますか？"
+          />
+          <FormItem
+            label="解消方法"
+            required
+            textarea
+            placeholder="どのように課題を解決しますか？"
+          />
           <FormItem_int label="人数" required placeholder="例：3" />
           <FormItem label="期間" required placeholder="例：2週間" />
-          <FormItem label="技術スタック" required placeholder="例：React, TypeScript, Node.js" />
+          <FormItem
+            label="技術スタック"
+            required
+            placeholder="例：React, TypeScript, Node.js"
+          />
 
           <hr className="border-t border-gray-200 mb-4" />
 
           <p className="my-[20px] text-gray-500">任意項目</p>
 
-          <FormItem_any label="解消方法" required textarea placeholder="どんな工夫や改善をしましたか？" />
-          <FormItem_any label="苦労した点" required textarea placeholder="どんな困難があり、どう乗り越えましたか？" />
+          <FormItem_any
+            label="解消方法"
+            required
+            textarea
+            placeholder="どんな工夫や改善をしましたか？"
+          />
+          <FormItem_any
+            label="苦労した点"
+            required
+            textarea
+            placeholder="どんな困難があり、どう乗り越えましたか？"
+          />
 
           <div className="mt-8">
             <button className="w-full bg-blue-600 text-white py-3 rounded-xl font-semibold hover:bg-blue-700">

@@ -26,7 +26,7 @@ export const FormItem_int = ({
         className="w-full border rounded p-2"
         onChange={(e) => {
           const value = e.target.value;
-          if (value === "") {
+          if (value === '') {
             onChange?.(0);
           } else {
             onChange?.(parseInt(value));

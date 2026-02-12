@@ -1,22 +1,22 @@
-import { useState } from "react";
-import { FormItem } from "./components/FormItem";
-import { FormItem_int } from "./components/FormItem_int";
-import { FormItem_any } from "./components/FormItem_any";
-import { SidebarItem } from "./components/SidebarItem";
-import Logo from "./assets/logo.png";
-import File from "./assets/file.png";
-import "./index.css";
+import { useState } from 'react';
+import { FormItem } from './components/FormItem';
+import { FormItem_int } from './components/FormItem_int';
+import { FormItem_any } from './components/FormItem_any';
+import { SidebarItem } from './components/SidebarItem';
+import Logo from './assets/logo.png';
+import File from './assets/file.png';
+import './index.css';
 
 export default function App() {
   const [formData, setFormData] = useState({
-    appName: "",
-    problem: "",
-    solution: "",
+    appName: '',
+    problem: '',
+    solution: '',
     members: 0,
-    period: "",
-    techStack: "",
-    improvement: "",
-    difficulty: "",
+    period: '',
+    techStack: '',
+    improvement: '',
+    difficulty: '',
   });
 
   const [result, setResult] = useState<string | null>(null);
@@ -37,26 +37,25 @@ export default function App() {
       const baseUrl = import.meta.env.VITE_API_BASE_URL;
 
       const res = await fetch(`${baseUrl}/generate-readme`, {
-        method: "POST",
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(formData),
       });
 
       if (!res.ok) {
-        throw new Error("APIエラー");
+        throw new Error('APIエラー');
       }
 
       const data = await res.json();
 
       // APIが { readme: "生成文章" } で返す想定
       setResult(data.readme);
-
     } catch (error) {
       console.error(error);
-      alert("エラーが発生しました");
+      alert('エラーが発生しました');
     } finally {
       setLoading(false);
     }
@@ -96,29 +95,26 @@ export default function App() {
 
           <FormItem
             label="アプリ名"
-            onChange={(v) => handleChange("appName", v)}
+            onChange={(v) => handleChange('appName', v)}
           />
           <FormItem
             label="課題"
             textarea
-            onChange={(v) => handleChange("problem", v)}
+            onChange={(v) => handleChange('problem', v)}
           />
           <FormItem
             label="解消方法"
             textarea
-            onChange={(v) => handleChange("solution", v)}
+            onChange={(v) => handleChange('solution', v)}
           />
           <FormItem_int
             label="人数"
-            onChange={(v) => handleChange("members", Number(v))}
+            onChange={(v) => handleChange('members', Number(v))}
           />
-          <FormItem
-            label="期間"
-            onChange={(v) => handleChange("period", v)}
-          />
+          <FormItem label="期間" onChange={(v) => handleChange('period', v)} />
           <FormItem
             label="技術スタック"
-            onChange={(v) => handleChange("techStack", v)}
+            onChange={(v) => handleChange('techStack', v)}
           />
 
           <hr className="border-t border-gray-200 my-6" />
@@ -126,12 +122,12 @@ export default function App() {
           <FormItem_any
             label="工夫した点"
             textarea
-            onChange={(v) => handleChange("improvement", v)}
+            onChange={(v) => handleChange('improvement', v)}
           />
           <FormItem_any
             label="苦労した点"
             textarea
-            onChange={(v) => handleChange("difficulty", v)}
+            onChange={(v) => handleChange('difficulty', v)}
           />
 
           <div className="mt-8">
@@ -140,7 +136,7 @@ export default function App() {
               disabled={loading}
               className="w-full bg-blue-600 text-white py-3 rounded-xl font-semibold hover:bg-blue-700 disabled:bg-gray-400"
             >
-              {loading ? "生成中..." : "READMEを作成"}
+              {loading ? '生成中...' : 'READMEを作成'}
             </button>
           </div>
         </div>

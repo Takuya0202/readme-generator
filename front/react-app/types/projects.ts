@@ -1,8 +1,8 @@
 export interface Project {
-    id : string;
-    name : string;
+  id: string;
+  name: string;
 }
 
 export interface ProjectsResponse {
-    data: Project[];
+  data: Project[];
 }

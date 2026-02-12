@@ -13,9 +13,7 @@ export const FormItem_any = ({
 }: Props) => {
   return (
     <div className="mb-4">
-      <label className="block mb-1 font-medium text-gray-600">
-        {label}
-      </label>
+      <label className="block mb-1 font-medium text-gray-600">{label}</label>
 
       {textarea ? (
         <textarea
