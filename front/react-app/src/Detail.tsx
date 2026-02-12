@@ -10,7 +10,7 @@ import { CreateChat } from './components/chat/create-chat';
 export default function Detail() {
   const { projectId } = useParams<{ projectId: string }>();
   const [chats, setChats] = useState<Chat[]>([]);
-  
+
   const getContent = useCallback(async () => {
     try {
       const token = import.meta.env.VITE_API_TOKEN;
@@ -53,25 +53,19 @@ export default function Detail() {
                       <AssistantChat content={chat.content} />
                     </div>
                   );
-                }
-                else {
+                } else {
                   return (
-                    <div className='flex justify-start' key={chat.id}>
-                      <AssistantMarkdown
-                       content={chat.content}
-                        />
+                    <div className="flex justify-start" key={chat.id}>
+                      <AssistantMarkdown content={chat.content} />
                     </div>
-                  )
+                  );
                 }
             }
           })}
         </div>
-        
+
         {/* フォームエリア */}
-        <CreateChat
-          projectId={projectId || ''}
-          onSuccess={getContent}
-        />
+        <CreateChat projectId={projectId || ''} onSuccess={getContent} />
       </div>
     </main>
   );

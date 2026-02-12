@@ -2,6 +2,8 @@ type Props = {
   label: string;
   required?: boolean;
   placeholder?: string;
+  value?: number;
+  error?: string | null;
   onChange?: (value: number) => void;
 };
 
@@ -9,6 +11,8 @@ export const FormItem_int = ({
   label,
   required,
   placeholder,
+  value,
+  error,
   onChange,
 }: Props) => {
   return (
@@ -23,7 +27,12 @@ export const FormItem_int = ({
         min="0"
         step="1"
         placeholder={placeholder}
-        className="w-full border rounded p-2"
+        value={value || ''}
+        className={`w-full border rounded p-2 focus:outline-none focus:ring-2 ${
+          error
+            ? 'border-red-500 focus:ring-red-500'
+            : 'border-gray-300 focus:ring-blue-500'
+        }`}
         onChange={(e) => {
           const value = e.target.value;
           if (value === '') {
@@ -33,6 +42,7 @@ export const FormItem_int = ({
           }
         }}
       />
+      {error && <p className="mt-1 text-sm text-red-500">{error}</p>}
     </div>
   );
 };

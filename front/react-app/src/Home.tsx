@@ -1,119 +1,56 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { FormItem } from './components/FormItem';
 import { FormItem_int } from './components/FormItem_int';
 import { FormItem_any } from './components/FormItem_any';
-import { SidebarItem } from './components/SidebarItem';
-import Logo from './assets/logo.png';
-import File from './assets/file.png';
-import './index.css';
+import Sidebar from './components/Sidebar';
+import toast from 'react-hot-toast';
+import { Loader2 } from 'lucide-react';
 
-export default function App() {
+export default function Home() {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    appName: '',
+    name: '',
     problem: '',
-    solution: '',
-    members: 0,
+    people: 0,
     period: '',
-    techStack: '',
-    improvement: '',
-    difficulty: '',
+    stack: '',
+    effort: '',
+    trouble: '',
   });
 
+  const [errors, setErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
-  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
-  const API_TOKEN = import.meta.env.VITE_API_TOKEN;
-
-  // プロジェクト一覧を取得（GET /api/projects）
-  const fetchProjects = async () => {
-    setSidebarLoading(true);
-    setSidebarError(null);
-
-    try {
-      const res = await fetch(`${API_BASE_URL}/projects`, {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${API_TOKEN}`,
-          Accept: "application/json",
-        },
+  const handleChange = (field: string, value: string | number) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
+    // 入力時にエラーをクリア
+    if (errors[field]) {
+      setErrors((prev) => {
+        const newErrors = { ...prev };
+        delete newErrors[field];
+        return newErrors;
       });
-
-      const text = await res.text();
-      if (!res.ok) {
-        throw new Error(`HTTP ${res.status}: ${text}`);
-      }
-
-      let json: any;
-      try {
-        json = JSON.parse(text);
-      } catch {
-        throw new Error("プロジェクト一覧APIがJSONを返していません");
-      }
-
-      const data = Array.isArray(json.data) ? json.data : [];
-      setProjects(data);
-    } catch (e: any) {
-      setSidebarError(e.message ?? "プロジェクト一覧の取得に失敗しました");
-    } finally {
-      setSidebarLoading(false);
     }
   };
 
-  useEffect(() => {
-    fetchProjects();
-  }, []);
-
-  // フォーム送信（POST /api/projects）→ 成功したら一覧を再取得
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setErrors({});
     setLoading(true);
-    setError(null);
-
-    // 既存の FormItem コンポーネントを壊さないため、DOM から値を拾う
-    const appNameInput = document.querySelector<HTMLInputElement>(
-      'input[placeholder="例：天気予報アプリ"]'
-    );
-    const problemTextarea = document.querySelector<HTMLTextAreaElement>(
-      'textarea[placeholder="どんな課題を解決しますか？"]'
-    );
-    const solutionTextarea = document.querySelector<HTMLTextAreaElement>(
-      'textarea[placeholder="どのように課題を解決しますか？"]'
-    );
-    const membersInput = document.querySelector<HTMLInputElement>(
-      'input[placeholder="例：3"]'
-    );
-    const periodInput = document.querySelector<HTMLInputElement>(
-      'input[placeholder="例：2週間"]'
-    );
-    const techStackInput = document.querySelector<HTMLInputElement>(
-      'input[placeholder="例：React, TypeScript, Node.js"]'
-    );
-    const improvementsTextarea = document.querySelector<HTMLTextAreaElement>(
-      'textarea[placeholder="どんな工夫や改善をしましたか？"]'
-    );
-    const difficultiesTextarea = document.querySelector<HTMLTextAreaElement>(
-      'textarea[placeholder="どんな困難があり、どう乗り越えましたか？"]'
-    );
-
-    const payload = {
-      name: appNameInput?.value ?? "",
-      problem: problemTextarea?.value ?? "",
-      solution: solutionTextarea?.value ?? "",
-      membersCount: membersInput?.value ? Number(membersInput.value) : null,
-      period: periodInput?.value ?? "",
-      techStack: techStackInput?.value ?? "",
-      improvements: improvementsTextarea?.value ?? "",
-      difficulties: difficultiesTextarea?.value ?? "",
-    };
 
     try {
-      setLoading(true);
-
       const token = import.meta.env.VITE_API_TOKEN;
       const baseUrl = import.meta.env.VITE_API_BASE_URL;
 
-      const res = await fetch(`${baseUrl}/generate-readme`, {
+      // nullableフィールドの処理
+      const payload = {
+        ...formData,
+        effort: formData.effort || null,
+        trouble: formData.trouble || null,
+      };
+
+      const res = await fetch(`${baseUrl}/projects`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -122,18 +59,32 @@ export default function App() {
         body: JSON.stringify(payload),
       });
 
-      const text = await res.text();
+      // バリデーションエラー (422)
+      if (res.status === 422) {
+        const data = await res.json();
+        if (data.status === 'validation' && data.fields) {
+          setErrors(data.fields);
+          toast.error('入力内容を確認してください');
+        } else {
+          toast.error('エラーが発生しました');
+        }
+        return;
+      }
+
       if (!res.ok) {
-        throw new Error('APIエラー');
+        throw new Error('プロジェクトの作成に失敗しました');
       }
 
       const data = await res.json();
+      toast.success('プロジェクトを作成しました');
 
-      // APIが { readme: "生成文章" } で返す想定
-      setResult(data.readme);
+      // プロジェクト詳細ページに遷移
+      if (data.id || data.data?.id) {
+        navigate(`/projects/${data.id || data.data.id}`);
+      }
     } catch (error) {
-      console.error(error);
-      alert('エラーが発生しました');
+      console.error('プロジェクトの作成に失敗しました:', error);
+      toast.error('プロジェクトの作成に失敗しました');
     } finally {
       setLoading(false);
     }
@@ -141,40 +92,8 @@ export default function App() {
 
   return (
     <div className="flex h-screen bg-white">
-      {/* Sidebar */}
-      <aside className="w-64 bg-white border-r px-4 py-6">
-        <div className="flex items-center">
-          <img src={Logo} alt="" className="h-[60px]" />
-          <div className="mx-[8px] text-[18px]">readme generator</div>
-        </div>
+      <Sidebar />
 
-        <button className="w-full mb-6 bg-blue-600 text-white rounded-lg py-2 font-medium hover:bg-blue-700">
-          ＋ 新しいチャット
-        </button>
-
-        <hr className="border-t border-gray-200 mb-4" />
-
-        <div className="text-sm text-gray-600 space-y-2">
-          {sidebarLoading && (
-            <div className="text-xs text-gray-400">読み込み中...</div>
-          )}
-          {sidebarError && (
-            <div className="text-xs text-red-500 break-words">
-              {sidebarError}
-            </div>
-          )}
-          {!sidebarLoading && !sidebarError && projects.length === 0 && (
-            <div className="text-xs text-gray-400">
-              まだプロジェクトがありません
-            </div>
-          )}
-          {projects.map((p) => (
-            <SidebarItem key={p.id} title={p.name} icon={File} />
-          ))}
-        </div>
-      </aside>
-
-      {/* Main */}
       <main className="flex-1 overflow-y-auto p-10">
         <h1 className="text-2xl font-bold text-center mb-2">
           最小限の入力でREADMEを作成
@@ -183,7 +102,6 @@ export default function App() {
           ハッカソンやチーム制作の成果を、伝わるREADMEに整理します。
         </p>
 
-        {/* フォーム全体を <form> で囲む */}
         <form
           onSubmit={handleSubmit}
           className="max-w-3xl mx-auto bg-white rounded-2xl border-2 border-gray-300 p-8"
@@ -194,28 +112,36 @@ export default function App() {
 
           <FormItem
             label="アプリ名"
-            onChange={(v) => handleChange('appName', v)}
+            required
+            value={formData.name}
+            error={errors.name}
+            onChange={(v) => handleChange('name', v)}
           />
           <FormItem
             label="課題"
             required
             textarea
+            value={formData.problem}
+            error={errors.problem}
             onChange={(v) => handleChange('problem', v)}
           />
-          <FormItem
-            label="解消方法"
-            required
-            textarea
-            onChange={(v) => handleChange('solution', v)}
-          />
           <FormItem_int
-            label="人数"
-            onChange={(v) => handleChange('members', Number(v))}
+            label="チーム人数"
+            value={formData.people}
+            error={errors.people}
+            onChange={(v) => handleChange('people', v)}
           />
-          <FormItem label="期間" onChange={(v) => handleChange('period', v)} />
+          <FormItem
+            label="開発期間"
+            value={formData.period}
+            error={errors.period}
+            onChange={(v) => handleChange('period', v)}
+          />
           <FormItem
             label="技術スタック"
-            onChange={(v) => handleChange('techStack', v)}
+            value={formData.stack}
+            error={errors.stack}
+            onChange={(v) => handleChange('stack', v)}
           />
 
           <hr className="border-t border-gray-200 mb-4" />
@@ -223,33 +149,36 @@ export default function App() {
           <p className="my-[20px] text-gray-500">任意項目</p>
 
           <FormItem_any
-            label="解消方法"
-            required
+            label="工夫・改善点"
             textarea
-            onChange={(v) => handleChange('improvement', v)}
+            value={formData.effort}
+            error={errors.effort}
+            onChange={(v) => handleChange('effort', v)}
           />
           <FormItem_any
             label="苦労した点"
-            required
             textarea
-            onChange={(v) => handleChange('difficulty', v)}
+            value={formData.trouble}
+            error={errors.trouble}
+            onChange={(v) => handleChange('trouble', v)}
           />
 
           <div className="mt-8">
             <button
               type="submit"
-              className="w-full bg-blue-600 text-white py-3 rounded-xl font-semibold hover:bg-blue-700 disabled:opacity-60"
+              className="w-full bg-blue-600 text-white py-3 rounded-xl font-semibold hover:bg-blue-700 disabled:bg-blue-500 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
               disabled={loading}
             >
-              {loading ? '生成中...' : 'READMEを作成'}
+              {loading ? (
+                <>
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                  <span>生成しています...</span>
+                </>
+              ) : (
+                <span>READMEを作成</span>
+              )}
             </button>
           </div>
-
-          {error && (
-            <div className="mt-4 text-red-500 text-sm break-words">
-              {error}
-            </div>
-          )}
         </form>
       </main>
     </div>

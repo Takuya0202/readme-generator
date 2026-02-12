@@ -14,10 +14,10 @@ export function CreateChat({ projectId, onSuccess }: props) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // エラーをクリア
     setError(null);
-    
+
     if (!message.trim()) {
       setError('メッセージを入力してください');
       return;
@@ -55,7 +55,7 @@ export function CreateChat({ projectId, onSuccess }: props) {
 
       toast.success('メッセージを送信しました');
       setMessage('');
-      
+
       if (onSuccess) {
         onSuccess();
       }
@@ -74,7 +74,11 @@ export function CreateChat({ projectId, onSuccess }: props) {
           <div className="flex-1">
             <input
               type="text"
-              placeholder={isLoading ? 'READMEを生成しています...' : 'READMEの修正内容を入力'}
+              placeholder={
+                isLoading
+                  ? 'READMEを生成しています...'
+                  : 'READMEの修正内容を入力'
+              }
               value={message}
               onChange={(e) => {
                 setMessage(e.target.value);
@@ -87,9 +91,7 @@ export function CreateChat({ projectId, onSuccess }: props) {
                   : 'border-gray focus:ring-blue-500'
               }`}
             />
-            {error && (
-              <p className="mt-2 text-sm text-red-500">{error}</p>
-            )}
+            {error && <p className="mt-2 text-sm text-red-500">{error}</p>}
           </div>
           <button
             type="submit"
