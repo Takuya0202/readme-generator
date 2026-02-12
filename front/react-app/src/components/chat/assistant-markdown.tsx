@@ -24,7 +24,7 @@ export function AssistantMarkdown({ content }: props) {
       </div>
 
       {/* メッセージ */}
-      <div className="relative bg-white border border-gray rounded-2xl p-6 flex-1 max-w-[800px]">
+      <div className="relative bg-white border border-gray rounded-2xl p-6 flex-1 max-w-[1200px]">
         <button
           onClick={handleCopy}
           className="absolute right-4 top-4 p-2 hover:bg-gray rounded transition-colors"

@@ -4,6 +4,7 @@ import './index.css';
 import Home from './Home.tsx';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import Detail from './Detail';
+import { Toaster } from 'react-hot-toast';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
@@ -12,6 +13,7 @@ createRoot(document.getElementById('root')!).render(
         <Route path="/projects" element={<Home />} />
         <Route path="/projects/:projectId" element={<Detail />} />
       </Routes>
+      <Toaster position="top-center" />
     </BrowserRouter>
   </StrictMode>
 );

@@ -13,7 +13,7 @@ export function AssistantChat({ content }: props) {
       </div>
 
       {/* メッセージ */}
-      <div className="p-6 bg-white rounded-2xl border border-gray">
+      <div className="p-6 bg-white rounded-2xl border border-gray max-w-[1200px]">
         <p className="text-black text-[18px]">{content}</p>
       </div>
     </div>
