@@ -2,11 +2,13 @@ import { SidebarItem } from "./SidebarItem";
 import Logo from '../assets/logo.png';
 import { useEffect, useState } from "react";
 import type { Project, ProjectsResponse } from "../../types/projects";
+import { useNavigate } from "react-router-dom";
 
 export default function Sidebar() {
   const [projects , setProjects ] = useState<Project[]>([]);
   const baseUrl = import.meta.env.VITE_API_BASE_URL;
   const token = import.meta.env.VITE_API_TOKEN;
+  const nav = useNavigate();
   useEffect(() => {
     const getProjects = async () => {
         try {
@@ -34,7 +36,8 @@ export default function Sidebar() {
       <div className="mx-[8px] text-[18px]">readme generator</div>
     </div>
 
-    <button className="w-full mb-6 bg-blue-600 text-white rounded-lg py-2 font-medium hover:bg-blue-700">
+    <button className="w-full mb-6 bg-blue-600 text-white rounded-lg py-2 font-medium hover:bg-blue-700"
+    onClick={() => nav('/projects')}>
       + 新しいプロジェクト
     </button>
 
