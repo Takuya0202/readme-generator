@@ -1,38 +1,38 @@
 type Props = {
-    label: string;
-    required?: boolean;
-    placeholder?: string;
-    textarea?: boolean;
-  };
-  
-  export function FormItem_int({
-    label,
-    required,
-    placeholder,
-    textarea,
-  }: Props) {
-    return (
-      <div className="mb-5">
-        <label className="block text-sm font-medium mb-1">
-          {label}
-          {required && <span className="text-red-500 ml-1">必須</span>}
-        </label>
-  
-        {textarea ? (
-          <textarea
-            className="w-full border rounded-lg px-3 py-2 min-h-[100px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder={placeholder}
-          />
-        ) : (
-          <input
-            type="number"
-            min={1}
-            step={1}
-            className="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder={placeholder}
-          />
-        )}
-      </div>
-    );
-  }
-  
+  label: string;
+  required?: boolean;
+  placeholder?: string;
+  onChange?: (value: number) => void;
+};
+
+export const FormItem_int = ({
+  label,
+  required,
+  placeholder,
+  onChange,
+}: Props) => {
+  return (
+    <div className="mb-4">
+      <label className="block mb-1 font-medium">
+        {label}
+        {required && <span className="text-red-500 ml-1">*</span>}
+      </label>
+
+      <input
+        type="number"
+        min="0"
+        step="1"
+        placeholder={placeholder}
+        className="w-full border rounded p-2"
+        onChange={(e) => {
+          const value = e.target.value;
+          if (value === "") {
+            onChange?.(0);
+          } else {
+            onChange?.(parseInt(value));
+          }
+        }}
+      />
+    </div>
+  );
+};
